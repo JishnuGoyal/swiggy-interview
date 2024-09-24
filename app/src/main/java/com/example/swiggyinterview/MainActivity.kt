@@ -105,6 +105,13 @@ class MainActivity : ComponentActivity() {
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+
+                            Image(
+                                painter = rememberImagePainter(data = detailsData.value.details?.Poster),
+                                contentDescription = "SwiggyInterview Image",
+                                modifier = Modifier.size(500.dp, 400.dp)
+                            )
+
                             Text(text = "${detailsData.value.details}")
                             if(detailsData.value.isLoading) {
                                 LoadingIndicator()
@@ -114,7 +121,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
     }
+
 }
 
 @Composable
@@ -145,11 +154,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             modifier = modifier
         )
 
-        Image(
-            painter = rememberImagePainter(data = "https://assets.vogue.in/photos/60a34c6b27ba73de7c5e604d/4:3/w_2896,h_2172,c_limit/GettyImages-1097661412.jpg"),
-            contentDescription = "SwiggyInterview Image",
-            modifier = Modifier.size(500.dp, 400.dp)
-        )
+
     }
 }
 

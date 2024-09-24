@@ -7,8 +7,10 @@ import com.example.swiggyinterview.data.remote.dto.MovieDetailsDTO
 import com.example.swiggyinterview.domain.model.Movie
 import com.example.swiggyinterview.domain.model.repository.MoviesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,8 +30,10 @@ class MoviesViewModel @Inject constructor(private val repository: MoviesReposito
 
     val statusMessage = MutableSharedFlow<String>()
 
+
     fun searchMovies(query: String) {
         if (query.isEmpty() || query.isEmpty()) return
+
         searchJob?.cancel()
         searchJob = viewModelScope.launch(Dispatchers.IO) {
             delay(1000)
