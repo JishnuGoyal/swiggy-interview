@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.sample"
+    namespace = "com.example.swiggyinterview"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.sample"
+        applicationId = "com.example.swiggyinterview"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
