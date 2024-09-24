@@ -1,6 +1,5 @@
 package com.example.swiggyinterview.domain.model
 
-import com.example.swiggyinterview.data.local.entity.MovieEntity
 import com.example.swiggyinterview.data.remote.dto.MovieDTO
 
 data class Movie(
@@ -11,18 +10,7 @@ data class Movie(
     val Poster: String
 )
 
-
 fun MovieDTO.toMovie(): Movie {
-    return Movie(
-        Title = this.Title,
-        Year = this.Year,
-        imdbID = this.imdbID,
-        Type = this.Type,
-        Poster = this.Poster
-    )
-}
-
-fun MovieEntity.toMovie(): Movie {
     return Movie(
         Title = this.Title,
         Year = this.Year,
