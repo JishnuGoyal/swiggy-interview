@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun FullWidthTextField(
+fun ReusableTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String = "Enter text",
@@ -47,7 +47,7 @@ fun FullWidthTextField(
 fun PreviewFullWidthTextField() {
     var text by remember { mutableStateOf("") }
 
-    FullWidthTextField(
+    ReusableTextField(
         value = text,
         onValueChange = { text = it },
         label = "Your Name",
