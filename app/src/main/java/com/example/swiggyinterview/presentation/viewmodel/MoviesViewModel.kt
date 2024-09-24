@@ -1,13 +1,13 @@
 package com.example.swiggyinterview.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.swiggyinterview.data.remote.Resource
-import com.example.swiggyinterview.data.remote.api.ApiService
+import com.example.swiggyinterview.data.remote.dto.MovieDetailsDTO
 import com.example.swiggyinterview.domain.model.Movie
 import com.example.swiggyinterview.domain.model.repository.MoviesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,25 +22,34 @@ class MoviesViewModel @Inject constructor(private val repository: MoviesReposito
 
     private var searchJob: Job? = null
 
-    val state = MutableStateFlow<UiState>(UiState())
+    val movieListScreenState = MutableStateFlow(MovieListScreenUiState())
+    val movieDetailsScreenState =
+        MutableStateFlow(MovieDetailsScreenUiState(details = null, true))
+
     val statusMessage = MutableSharedFlow<String>()
 
     fun searchMovies(query: String) {
+        if (query.isEmpty() || query.isEmpty()) return
         searchJob?.cancel()
-        searchJob = viewModelScope.launch {
+        searchJob = viewModelScope.launch(Dispatchers.IO) {
             delay(1000)
             repository.searchMovies(query).collect { result ->
-                when(result) {
+                when (result) {
                     is Resource.Error -> {
-                        state.value = UiState(emptyList(), isLoading = true)
+                        movieListScreenState.value =
+                            MovieListScreenUiState(emptyList(), isLoading = true)
                         statusMessage.emit(result.message.toString())
                     }
+
                     is Resource.Loading -> {
-                        state.value = UiState(emptyList(), isLoading = true)
+                        movieListScreenState.value =
+                            MovieListScreenUiState(emptyList(), isLoading = true)
                         statusMessage.emit(result.message.toString())
                     }
+
                     is Resource.Success -> {
-                        state.value = UiState(result.data!!, isLoading = false)
+                        movieListScreenState.value =
+                            MovieListScreenUiState(result.data!!, isLoading = false)
                         statusMessage.emit("Success")
                     }
                 }
@@ -48,6 +57,36 @@ class MoviesViewModel @Inject constructor(private val repository: MoviesReposito
             }
         }
     }
+
+    fun getMovieDetails(imdbId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getMoviesDetails(imdbId).collect { result ->
+                when (result) {
+                    is Resource.Error -> {
+                        movieDetailsScreenState.value = MovieDetailsScreenUiState(null, false)
+                        statusMessage.emit(result.message.toString())
+                    }
+
+                    is Resource.Loading -> {
+                        movieDetailsScreenState.value = MovieDetailsScreenUiState(null, false)
+                        statusMessage.emit(result.message.toString())
+                    }
+
+                    is Resource.Success -> {
+                        movieDetailsScreenState.value = MovieDetailsScreenUiState(result.data, false)
+                        statusMessage.emit("Success")
+                    }
+                }
+
+            }
+
+        }
+    }
 }
 
-data class UiState(val movies: List<Movie> = emptyList(), val isLoading: Boolean = false)
+data class MovieListScreenUiState(
+    val movies: List<Movie> = emptyList(),
+    val isLoading: Boolean = false
+)
+
+data class MovieDetailsScreenUiState(val details: MovieDetailsDTO?, val isLoading: Boolean = true)
